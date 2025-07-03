@@ -11,14 +11,15 @@ const nextConfig = {
 
   // Uncoment to add domain whitelist
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**',
+        hostname: 'baissds.com',
       },
       {
         protocol: 'http',
-        hostname: '**',
+        hostname: '2323s.com',
       },
     ],
   },
