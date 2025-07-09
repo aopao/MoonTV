@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/exhaustive-deps, @typescript-eslint/no-explicit-any */
 'use client';
 
 import { Search, X } from 'lucide-react';
@@ -13,7 +13,6 @@ import {
 } from '@/lib/db.client';
 import { SearchResult } from '@/lib/types';
 
-import AggregateCard from '@/components/AggregateCard';
 import PageLayout from '@/components/PageLayout';
 import VideoCard from '@/components/VideoCard';
 
@@ -29,11 +28,12 @@ function SearchPageClient() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
 
   // 视图模式：聚合(agg) 或 全部(all)，默认值由环境变量 NEXT_PUBLIC_AGGREGATE_SEARCH_RESULT 决定
+  const defaultAggregate =
+    typeof window !== 'undefined' &&
+    Boolean((window as any).RUNTIME_CONFIG?.AGGREGATE_SEARCH_RESULT);
+
   const [viewMode, setViewMode] = useState<'agg' | 'all'>(
-    process.env.NEXT_PUBLIC_AGGREGATE_SEARCH_RESULT === 'false' ||
-      process.env.NEXT_PUBLIC_AGGREGATE_SEARCH_RESULT === '0'
-      ? 'all'
-      : 'agg'
+    defaultAggregate ? 'agg' : 'all'
   );
 
   // 聚合后的结果（按标题和年份分组）
@@ -185,10 +185,14 @@ function SearchPageClient() {
                   ? aggregatedResults.map(([mapKey, group]) => {
                       return (
                         <div key={`agg-${mapKey}`} className='w-full'>
-                          <AggregateCard
-                            items={group}
-                            query={searchQuery}
+                          <VideoCard
+                            id={group[0].id}
+                            source={group[0].source}
+                            title={group[0].title}
+                            poster={group[0].poster}
+                            source_name={group[0].source_name}
                             year={group[0].year}
+                            items={group}
                           />
                         </div>
                       );
